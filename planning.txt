@@ -68,7 +68,7 @@ columns -
 id (int , unique) will be foriegn key of todo relation.
 username (string , required)- only for signup.
 email (string , unique , required) - for both login and signup.
-password (string , unique , required) - for both login and signup ---> will encrypt it , before get stored in the user collection.
+password (string , required) - for both login and signup ---> will encrypt it , before get stored in the user collection.
 profile-pic (string(cloudinory,s3) , optional)
 timestamp -  for the history.
 
@@ -105,3 +105,22 @@ after 7 days user ka token auto expire ho jaiyega unhe dobara login karna hoga n
 
 jwt ke liye - jsonwebtoken library chahiye hoga
 psw ko encrypt karne ke liye - bcrypt library user karnge.
+
+
+testing - 
+login - http://localhost:5000/user/login
+
+{
+  "username":"tamanna12",
+  "email":"tamanna@gmail.com",
+  "password":"Tamanna@12"
+}
+
+
+signup - http://localhost:5000/user/signup
+
+
+{
+  "email":"tamanna@gmail.com",
+  "password":"Tamanna@12"
+}

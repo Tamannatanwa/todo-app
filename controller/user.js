@@ -28,7 +28,7 @@ const signup = async(req,res)=>{
         const hashPsw = await bcrypt.hash(password,10)
         const addUser = user.create({username,email,password:hashPsw})
         return res.status(201).json({
-            msg:"User has been created successfully !",
+            msg:"user signup successfully !",
             username:addUser.username,
             email: addUser.email,
             auth_token:await genrateToken(addUser)
@@ -43,7 +43,26 @@ const signup = async(req,res)=>{
 
 const login = async(req,res)=>{
     try{
-
+        const {email,password} = req.body;
+        console.log(email,password)
+        if(!email && !password){
+            return res.status(400).json({
+                msg:"all fields are required !"
+            })
+        }
+        const userFind = await user.findOne({email});
+        const psw_varify = await bcrypt.compare(password,userFind.password)
+        if(!psw_varify){
+            return res.status(400).json({
+                msg:"wrong password"
+            })
+        }
+        return res.status(200).json({
+            msg:"User login successfully !",
+            emai:userFind.email,
+            username:userFind.username,
+            _id:userFind._id
+        })
     }
     catch(err){
 
