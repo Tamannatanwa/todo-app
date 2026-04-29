@@ -69,7 +69,7 @@ id (int , unique) will be foriegn key of todo relation.
 username (string , required)- only for signup.
 email (string , unique , required) - for both login and signup.
 password (string , unique , required) - for both login and signup ---> will encrypt it , before get stored in the user collection.
-profile-pic (byte , optional)
+profile-pic (string(cloudinory,s3) , optional)
 timestamp -  for the history.
 
 
@@ -95,7 +95,13 @@ will also create a middleware function for todo routes to varify users identity.
 
 same chij sign ke liye bhi hoga.
 
-bus signup ke time user ko sirf psw and email dena hoga , hm use new token genrate karke provide kar dnege.
+bus signup ke time user ko sirf psw and email dena hoga , hm use new token genrate karke provide kar denge.
 
 hm expire date bhi rakhenge abhi ke liye 7 days.
 after 7 days user ka token auto expire ho jaiyega unhe dobara login karna hoga new token ke liye.
+
+
+
+
+jwt ke liye - jsonwebtoken library chahiye hoga
+psw ko encrypt karne ke liye - bcrypt library user karnge.
