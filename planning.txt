@@ -15,3 +15,29 @@ name (string hoga , unique hoga ye bhi)
 status (string hoga, default isko "not started" rakhenge).
 
 created (timestamp rakhenge)
+
+
+
+
+
+database ke liye mongoose ORM use karenge mongodb ke sath - local use kar rhe , atlas use nhi karenge abhi ke liye.
+
+
+
+routing - route/route.js
+
+hm 4 route banayenge
+
+1) todo's ko add karne ke liye - /add-todo
+2) all todo's ko get karne ke liye  - /todo
+3) todo's ko id ke base per get karne ke liye - /todo:id
+4) todo ko update karne ke liye by id - /todo:id
+5) todo ko delete karne ke liye by id - /todo:id
+
+
+option route 
+
+1) delete all todo's
+
+
+
