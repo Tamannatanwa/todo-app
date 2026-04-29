@@ -41,3 +41,12 @@ option route
 
 
 
+
+
+Testing - url
+
+post = http://localhost:5000/todo/add-task = {"name":"todo2222"}
+getById =  http://localhost:5000/todo/69f1a87e505effc2c6778336
+GetAll = http://localhost:5000/todos
+UpdateById = http://localhost:5000/todo/69f1a87e505effc2c6778336 = {"name":"todo2222"}
+DeleteById = http://localhost:5000/todo/69f1a87e505effc2c6778336
