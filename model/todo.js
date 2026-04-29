@@ -6,11 +6,11 @@ const todoSchema = mongoose.Schema({
         require:true,
         unique:true
     },
-    status:{
-        type:String,
-        enum:['not started','pending','completed'],
-        default:'not started'
-    }
+    // status:{
+    //     type:String,
+    //     enum:['not started','pending','completed'],
+    //     default:'not started'
+    // }
 },
 { timestamps: true }
 )
