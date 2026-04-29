@@ -61,7 +61,8 @@ const login = async(req,res)=>{
             msg:"User login successfully !",
             emai:userFind.email,
             username:userFind.username,
-            _id:userFind._id
+            _id:userFind._id,
+            auth_token:await genrateToken(userFind)
         })
     }
     catch(err){
