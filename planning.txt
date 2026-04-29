@@ -1,0 +1,17 @@
+todo ke liye ek relation create karenge usme 
+kuch columns add karenge jaise.
+
+id - primary key hoga
+name hoga task ka.
+status hoga task ka(ye enum rakhenge).
+created and updated hoga history ke liye.
+
+relation name - todos
+
+column - id (int , unique hoga) 
+
+name (string hoga , unique hoga ye bhi)
+
+status (string hoga, default isko "not started" rakhenge).
+
+created (timestamp rakhenge)
