@@ -50,3 +50,52 @@ getById =  http://localhost:5000/todo/69f1a87e505effc2c6778336
 GetAll = http://localhost:5000/todos
 UpdateById = http://localhost:5000/todo/69f1a87e505effc2c6778336 = {"name":"todo2222"}
 DeleteById = http://localhost:5000/todo/69f1a87e505effc2c6778336
+
+
+
+
+
+
+2nd planing - login/signup with jwt.
+
+
+add middleware for todo table so only authorized users can get access to perform crud on todo relation.
+
+relation name  -  users
+
+columns - 
+
+id (int , unique) will be foriegn key of todo relation.
+username (string , required)- only for signup.
+email (string , unique , required) - for both login and signup.
+password (string , unique , required) - for both login and signup ---> will encrypt it , before get stored in the user collection.
+profile-pic (byte , optional)
+timestamp -  for the history.
+
+
+route - 
+1) /login 
+2) /signup
+3) /:id - delete route to delete the user by id.
+4) /:id - update route to update the user details 
+
+
+optional route 
+1) refresh token - abhi ke liye 
+
+while signup -  create jwt to provide access to users.
+
+
+jaise hi user got created - jwt assign karenge usko user apne pass rakhega.
+jab user todo ke kisi bhi route ko access karega to hm usse token lenge and verify karenge , 
+agar varify ho jata he token middleware function ke dwara to hm user ko crud perform karne denge todo collection ke uper.
+
+
+will also create a middleware function for todo routes to varify users identity.
+
+same chij sign ke liye bhi hoga.
+
+bus signup ke time user ko sirf psw and email dena hoga , hm use new token genrate karke provide kar dnege.
+
+hm expire date bhi rakhenge abhi ke liye 7 days.
+after 7 days user ka token auto expire ho jaiyega unhe dobara login karna hoga new token ke liye.
