@@ -108,6 +108,7 @@ psw ko encrypt karne ke liye - bcrypt library user karnge.
 
 
 testing - 
+
 login - http://localhost:5000/user/login
 
 {
@@ -126,4 +127,11 @@ signup - http://localhost:5000/user/signup
 }
 
 
-aap authmiddleware ko  test karne ke liye todo collection pe crud karke check kar skate he
+aap authmiddleware ko  test karne ke liye todo collection pe crud karke check kar skate he.
+
+
+
+
+
+
+

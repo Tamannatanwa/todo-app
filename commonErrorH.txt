@@ -1,0 +1,33 @@
+
+middleware for ErrorHandling
+
+
+Nice and now add Logger and common middle ware for error handle
+
+me abhi thora or error handling ko explore kar rhi hu.
+
+mujhe kuch resources mile he -
+
+Error Handling with Express (dev community) -  https://dev.to/srishtikprasad/error-handling-with-express-40pk
+
+
+Simplified Guide to Setting Up a Global Error Handler in Express.js - https://medium.com/@mohsinansari.dev/simplified-guide-to-setting-up-a-global-error-handler-in-express-js-daf8dd640b69
+
+Error Handling = https://expressjs.com/en/guide/error-handling.html
+
+Video - https://www.youtube.com/watch?v=WXa1yzLR3hw&t=1s
+
+
+
+hm sabhi async error ko handle karne ke liye ek common middleware banayenge.
+is middleware ko sabhi function me use karenge jaha jaha zarurat hogi.
+
+isko banane ke 2 main reseason he.
+
+1) catch block ka code bar bar nhi likhna hoga jisse code duplication kam hoga.
+2) code error ke alava jo errors honge unhe gracefully handle kar payenge wihtout server crash.
+
+
+and hm alomost her jagah jaha error aane ka pata he or jaha koi problem ho sakti he logger laga denge jisse hme problem ka pata direct lag jaye terminal dekh kar.
+
+
