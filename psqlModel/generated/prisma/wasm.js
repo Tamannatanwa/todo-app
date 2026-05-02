@@ -100,6 +100,30 @@ exports.Prisma.PostScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ProductPlanScalarFieldEnum = {
+  plan_id: 'plan_id',
+  productName: 'productName',
+  price: 'price',
+  billing_cycle: 'billing_cycle'
+};
+
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  email: 'email',
+  password: 'password',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  subscription_id: 'subscription_id',
+  planId: 'planId',
+  userId: 'userId',
+  start_date: 'start_date',
+  end_date: 'end_date',
+  status: 'status'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -114,10 +138,23 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.Status = exports.$Enums.Status = {
+  active: 'active',
+  canceled: 'canceled',
+  expired: 'expired'
+};
 
+exports.Plan_Cycle = exports.$Enums.Plan_Cycle = {
+  monthly: 'monthly',
+  yearly: 'yearly',
+  once: 'once'
+};
 
 exports.Prisma.ModelName = {
-  Post: 'Post'
+  Post: 'Post',
+  ProductPlan: 'ProductPlan',
+  User: 'User',
+  Subscription: 'Subscription'
 };
 /**
  * Create the Client
@@ -165,13 +202,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Get a free hosted Postgres database in seconds: `npx create-db`\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Post {\n  id        Int      @id @default(autoincrement())\n  title     String\n  content   String?\n  createdAt DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "7e062d97b4c9eaa3ab8119f397059bdd6202da602f147aae0f1ac54508db0cd3",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Get a free hosted Postgres database in seconds: `npx create-db`\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Status {\n  active\n  canceled\n  expired\n}\n\nenum Plan_Cycle {\n  monthly\n  yearly\n  once\n}\n\nmodel Post {\n  id        Int      @id @default(autoincrement())\n  title     String\n  content   String?\n  createdAt DateTime @default(now())\n}\n\nmodel ProductPlan {\n  plan_id       Int            @id @default(autoincrement())\n  productName   String\n  price         String\n  billing_cycle Plan_Cycle     @default(once)\n  subscriptions Subscription[]\n}\n\nmodel User {\n  id            Int            @id @default(autoincrement())\n  username      String\n  email         String         @unique\n  password      String\n  createdAt     DateTime\n  subscriptions Subscription[]\n}\n\nmodel Subscription {\n  subscription_id Int @id @default(autoincrement())\n\n  planId Int\n  plan   ProductPlan @relation(fields: [planId], references: [plan_id])\n\n  userId Int\n\n  user User @relation(fields: [userId], references: [id])\n\n  start_date DateTime\n  end_date   DateTime\n  status     Status   @default(active)\n}\n",
+  "inlineSchemaHash": "1b3ed7461db5a4be189cd98b2b8b4dc00f3daad2dc0f3b41f0c1d28a36b2d3b5",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"ProductPlan\":{\"fields\":[{\"name\":\"plan_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"billing_cycle\",\"kind\":\"enum\",\"type\":\"Plan_Cycle\"},{\"name\":\"subscriptions\",\"kind\":\"object\",\"type\":\"Subscription\",\"relationName\":\"ProductPlanToSubscription\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"subscriptions\",\"kind\":\"object\",\"type\":\"Subscription\",\"relationName\":\"SubscriptionToUser\"}],\"dbName\":null},\"Subscription\":{\"fields\":[{\"name\":\"subscription_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"planId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"plan\",\"kind\":\"object\",\"type\":\"ProductPlan\",\"relationName\":\"ProductPlanToSubscription\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SubscriptionToUser\"},{\"name\":\"start_date\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"end_date\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"Status\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

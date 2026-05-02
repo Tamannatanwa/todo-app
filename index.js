@@ -16,8 +16,8 @@ const {errorHandler ,  globalErrorHandler} = require("./middlewares/ErrorHandlin
 
 const app = express()
 
-// Common Middleware
 
+// Common Middleware
 app.use(express.json())
 app.use("/todo",todoRoute)
 app.use("/user",userRoute)
@@ -25,23 +25,6 @@ app.use(errorHandler);
 
 
 const PORT = process.env.PORT
-
-
-
-
-//Prisma
-
-const { PrismaClient } = require('./psqlModel/generated/prisma')
-
-const prisma = new PrismaClient();
-
-
-
-
-
-
-
-
 
 
 app.listen(PORT , ()=>{

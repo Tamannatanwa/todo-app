@@ -128,6 +128,30 @@ exports.Prisma.PostScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ProductPlanScalarFieldEnum = {
+  plan_id: 'plan_id',
+  productName: 'productName',
+  price: 'price',
+  billing_cycle: 'billing_cycle'
+};
+
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  email: 'email',
+  password: 'password',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  subscription_id: 'subscription_id',
+  planId: 'planId',
+  userId: 'userId',
+  start_date: 'start_date',
+  end_date: 'end_date',
+  status: 'status'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -142,10 +166,23 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.Plan_Cycle = exports.$Enums.Plan_Cycle = {
+  monthly: 'monthly',
+  yearly: 'yearly',
+  once: 'once'
+};
 
+exports.Status = exports.$Enums.Status = {
+  active: 'active',
+  canceled: 'canceled',
+  expired: 'expired'
+};
 
 exports.Prisma.ModelName = {
-  Post: 'Post'
+  Post: 'Post',
+  ProductPlan: 'ProductPlan',
+  User: 'User',
+  Subscription: 'Subscription'
 };
 
 /**

@@ -13,9 +13,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Status {
+  active
+  canceled
+  expired
+}
+
+enum Plan_Cycle {
+  monthly
+  yearly
+  once
+}
+
 model Post {
   id        Int      @id @default(autoincrement())
   title     String
   content   String?
   createdAt DateTime @default(now())
+}
+
+model ProductPlan {
+  plan_id       Int            @id @default(autoincrement())
+  productName   String
+  price         String
+  billing_cycle Plan_Cycle     @default(once)
+  subscriptions Subscription[]
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  username      String
+  email         String         @unique
+  password      String
+  createdAt     DateTime
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  subscription_id Int @id @default(autoincrement())
+
+  planId Int
+  plan   ProductPlan @relation(fields: [planId], references: [plan_id])
+
+  userId Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  start_date DateTime
+  end_date   DateTime
+  status     Status   @default(active)
 }

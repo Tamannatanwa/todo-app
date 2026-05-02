@@ -1,0 +1,36 @@
+Use postgrsql to store data when user purchases the app
+
+isme hme user schema to chahiye hoga , jo ki hm already define kar chuke he mongo db me.
+
+
+aage ke liye hme 2 or tables banane honge 
+
+1) Product/Plan - plan ka info hoga isme
+2) purchases - subscription detail hoga
+
+isme product entity me hm 
+
+Plan -  columns
+
+1) PlanId
+2) Name - konsa plan purchase kiya example - [free,primium,Baic]
+3) Price - 
+4) Billing Cycle - monthly,yearly,once
+
+
+
+
+purchase - columns
+
+1) purchase_id
+2) userId
+3) PlanId
+4) Start_Date
+5) End_Date
+6) status ('active', 'canceled', 'expired')
+
+isme do alag entity banayenge isko normalize rakhne ke liye
+1 vale product table me hamare pass jo bhi offer/plans honge vo add karenge.
+isko baar baar migrate kar sakte he , jaise hi plan me kuch new add karte he.
+
+second table me each user ka details rahega ki konse user ne konsa product/plan liya.
