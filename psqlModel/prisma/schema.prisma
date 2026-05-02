@@ -33,33 +33,33 @@ model Post {
   createdAt DateTime @default(now())
 }
 
-model ProductPlan {
+model productplan {
   plan_id Int  @id @default(autoincrement())
   productName String
   price String
   billing_cycle Plan_Cycle @default(once)
-  subscriptions Subscription[] 
+  subscriptions subscription[] 
 }
 
 
-model User {
+model user {
   id Int @id @default(autoincrement())
   username String
   email String @unique
   password String 
   createdAt DateTime
-  subscriptions Subscription[] 
+  subscriptions subscription[] 
 }
 
-model Subscription {
+model subscription {
   subscription_id Int  @id @default(autoincrement())
 
   planId Int  
-  plan ProductPlan @relation(fields: [planId], references: [plan_id])
+  plan productplan @relation(fields: [planId], references: [plan_id])
   
   userId Int 
 
-  user User @relation(fields: [userId],references: [id])
+  user user @relation(fields: [userId],references: [id])
 
   start_date DateTime
   end_date DateTime

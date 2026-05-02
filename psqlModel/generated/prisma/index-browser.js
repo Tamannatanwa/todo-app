@@ -128,7 +128,7 @@ exports.Prisma.PostScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.ProductPlanScalarFieldEnum = {
+exports.Prisma.ProductplanScalarFieldEnum = {
   plan_id: 'plan_id',
   productName: 'productName',
   price: 'price',
@@ -180,9 +180,9 @@ exports.Status = exports.$Enums.Status = {
 
 exports.Prisma.ModelName = {
   Post: 'Post',
-  ProductPlan: 'ProductPlan',
-  User: 'User',
-  Subscription: 'Subscription'
+  productplan: 'productplan',
+  user: 'user',
+  subscription: 'subscription'
 };
 
 /**
