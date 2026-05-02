@@ -13,3 +13,5 @@
 *.sublime-workspace
 *.iml                                                       
 /generated/prisma
+
+/psqlModel/generated/prisma
