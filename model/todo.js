@@ -11,6 +11,10 @@ const todoSchema = new mongoose.Schema({
     //     enum:['not started','pending','completed'],
     //     default:'not started'
     // }
+    user_id: {
+      type: Number,
+      required: true,
+    }
 },
 { timestamps: true }
 )

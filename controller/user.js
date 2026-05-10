@@ -46,6 +46,7 @@ const signup = async (req, res, next) => {
       msg: "user signup successfully !",
       username: newUser.username,
       email: newUser.email,
+      userId:newUser.id,
       auth_token: await genrateToken(newUser),
     });
   } catch (err) {
@@ -74,14 +75,14 @@ const login = async (req, res, next) => {
         msg: "wrong password",
       });
     }
-
+    
     console.log("User Found", userFind);
 
     return res.status(200).json({
       msg: "User login successfully !",
       emai: userFind.email,
       username: userFind.username,
-      _id: userFind._id,
+      UserId: userFind.id,
       auth_token: await genrateToken(userFind),
     });
   } catch (err) {
