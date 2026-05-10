@@ -1,0 +1,9 @@
+
+Have shifted user controller logic to add user into postgres table afte login/signup.
+
+also add user Authentication in the todo.
+while adding task we will add user_id as a foreign key into todo's document.
+
+also when fetching all todo;s , we have converted logic into all based on userId foreign key.
+
+in the get ,update and delete by id also have check userId for security pupose's
