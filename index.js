@@ -4,7 +4,7 @@ const dotenv = require("dotenv").config()
 
 //DB Connections with mongo + postgres
 const conn = require("./config/conn");
-const pgConn = require("./config/psqlConn")
+const {pgConn} = require("./config/psqlConn")
 
 
 // Routes - v1.0.0.1

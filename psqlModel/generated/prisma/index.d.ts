@@ -6054,7 +6054,7 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    createdAt: Date | string
+    createdAt?: Date | string
     subscriptions?: subscriptionCreateNestedManyWithoutUserInput
   }
 
@@ -6063,7 +6063,7 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    createdAt: Date | string
+    createdAt?: Date | string
     subscriptions?: subscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -6089,7 +6089,7 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    createdAt: Date | string
+    createdAt?: Date | string
   }
 
   export type userUpdateManyMutationInput = {
@@ -6897,7 +6897,7 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    createdAt: Date | string
+    createdAt?: Date | string
   }
 
   export type userUncheckedCreateWithoutSubscriptionsInput = {
@@ -6905,7 +6905,7 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    createdAt: Date | string
+    createdAt?: Date | string
   }
 
   export type userCreateOrConnectWithoutSubscriptionsInput = {

@@ -1,4 +1,5 @@
 const todo = require("../model/todo")
+const { prisma } = require("../config/psqlConn");
 
 const addTodo = async (req,res)=>{
     try{
