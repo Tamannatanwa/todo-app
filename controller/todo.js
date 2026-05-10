@@ -56,10 +56,10 @@ const getTodoById = async (req, res) => {
   try {
     const { id } = req.params;
     const { userId } = req.user;
-    const allTodo = await todo.findById({ _id: id });
-    if (!(allTodo?.user_id == userId)) {
+    const allTodo = await todo.findOne({ _id: id,user_id : userId });
+    if (!allTodo) {
       return res.status(400).json({
-        msg: "Invalid UserId",
+        msg: "Todo not found or unauthorized",
       });
     }
     console.log("userData", allTodo);
@@ -78,10 +78,14 @@ const updateTodoById = async (req, res) => {
     const { name } = req.body;
     const { id } = req.params;
     const { userId } = req.user;
-    const allTodo = await todo.updateOne({ _id: id }, { $set: { name: name } });
-    if (!(allTodo?.user_id == userId)) {
+    const allTodo = await todo.findOneAndUpdate(
+      { _id: id, user_id: userId },
+      { $set: { name } },
+      { new: true } 
+    );
+     if (!allTodo) {
       return res.status(400).json({
-        msg: "Invalid UserId",
+        msg: "Todo not found or unauthorized",
       });
     }
     console.log("todo task has been updated", allTodo);
@@ -99,15 +103,15 @@ const deleteTodoById = async (req, res) => {
   try {
     const { id } = req.params;
     const { userId } = req.user;
-    const allTodo = await todo.deleteOne({ _id: id });
-    if (!(allTodo?.user_id == userId)) {
-      return res.status(400).json({
-        msg: "Invalid UserId",
-      });
+    const allTodo = await todo.deleteOne({ _id: id,user_id : userId });
+
+    if (allTodo.deletedCount === 0) {
+      return res.status(404).json({ msg: "Todo not found or unauthorized" });
     }
+
     console.log("todo task deleted", allTodo);
     return res.status(200).json({
-      msg: "todo task has bee deleted successfully !",
+      msg: "todo task has been deleted successfully !",
       data: allTodo,
     });
   } catch (err) {
