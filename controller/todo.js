@@ -50,7 +50,8 @@ const addTodo = async (req,res)=>{
 
 const getAllTodo = async (req,res)=>{
     try{
-        const allTodo = await todo.find();
+        const { userId} = req.user
+        const allTodo = await todo.find({user_id:userId});
         console.log("All Todo Tasks",allTodo)
         return res.status(200).json({
             msg:"all todo's",
