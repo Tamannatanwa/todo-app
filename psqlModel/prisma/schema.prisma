@@ -64,8 +64,9 @@ model subscription {
   start_date DateTime
   end_date DateTime
   status Status @default(active)
-
 }
+
+
 
 
 
