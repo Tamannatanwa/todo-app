@@ -1,6 +1,6 @@
 const express = require("express")
 const dotenv = require("dotenv").config()
-
+const cors = require("cors")
 
 //DB Connections with mongo + postgres
 const conn = require("./config/conn");
@@ -18,6 +18,7 @@ const app = express()
 
 
 // Common Middleware
+app.use(cors())
 app.use(express.json())
 app.use("/todo",todoRoute)
 app.use("/user",userRoute)

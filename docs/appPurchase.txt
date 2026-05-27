@@ -1,0 +1,200 @@
+User can buy plans subscription like monthly,yearly.
+we give trial to users for few days....
+after trial we will start subscription...
+
+
+
+subscription
+user can change subscription
+
+
+monthly to yearly
+monthly to lifetime
+yearly to monthly
+yearly to lifetime
+lifetime
+
+
+if User have trial ?
+
+we will add a cron job to update the user subscription , after the trial days end...
+
+
+
+
+
+*******************************
+
+
+isko create karne ke liye sabse phle hme ek 
+
+1) payment gayway provider ki zarurat  hogi
+
+strip global he , razorpay india,paypal etc options we he thora or dekh sakte he 
+lekin hm apne system me abhi strip use karenge to utna iske liye research nhi karenge , lekin bad me agar project me kuch shift hota he to 
+we can check other option out.
+
+provider - stripe (Global)
+
+provider node/express ke sath hm integrate kar lenge
+it will handle 
+
+card processing,upi,wallets , net banking based on user choice.
+
+ye provider hme ek api dega to create charges kitna lena he , subscriptions kya honge , invoice generate kar payenge.
+
+and ye refunds , payment fail ho jaye ya retries ko bhi handle kar leta he khud se.
+
+
+
+
+2) av hme plan's/product catalog 
+
+ke baare me thora or gaharai se sochna hoga 
+
+jaise real life me dekhe kisi app ka refrence leke to
+
+hamare pass pro plan's kuch is tarah se hote he
+
+monthly -> x charges for 1 month
+
+yearly -> y charges for 1 yearly
+
+once (lifetime) -> z price for lifetime 
+
+isme hm 1 month ko 30 days 
+and 1 year ko 365 days bhi bol sakte he.
+
+kyuki hm agar 1 month bolnege to hme code samjhne me thora dikkat hoga
+
+agar days rakha to hm days count karke user ko re payment ke liye inform kar sakte he
+
+ya auto kat skate he amount.
+
+
+hr plan ki apni ek unique plan Id hogi taki hm identify kar sake 
+
+user ne konsa plan choose kiya he
+
+
+
+3) model/db design for it
+
+iske liye hme 3 model ki zarurat hogi
+
+    1 - users ke data ko store karne ke liye user table 
+
+        id  - pk 
+        username    
+        email         
+        password    
+        createdAt     
+        updateAt
+  
+
+    2 - hme products catalog ka details rakhna hoga 
+        isme hamare pass 
+        planId primary key , 
+        plan name unique,
+        plan charges float,
+        plan start date DATE, 
+        plan end date Date,
+        plan status enum use karnege (active | expired | cancelled | paused)
+        history ke liye timestamps rakhenge.
+
+    3 - is model me hm users + user ne kya plan liya uska details rakhenge
+
+        userId - fk users table
+        planId - fk producs table
+        subscription_Id - pk
+        sub_provide_id - strip se lenge
+        history ke liye timestamps rakhenge.
+
+    
+
+4) Subscription vs One-Time Payment Logic
+
+
+isme hme payment lene ke kuch rules ko apply karna hoga or samjhna hoga
+
+hamare pass 2 chije he monthly/yearly plan , lifetime plan
+
+dono ke liye alag - alag tarah se system work karega or contraints bhi alag honge
+
+jaise   samjho - 
+
+hm monthly ya yearly plan me auto payment ka option rakh sakte he
+lekin lifetime me nhi kar skate kyuki isme one time payment hoga
+
+monthly/yearly - ko ek dusre me change ya cancle kiya ja sakta he bich me
+lekin lifetime vale ko nhi .
+
+hm monthly/yearly ko re new kara skate he bich me pyament rok skate he ya plan ko end kar skate he
+lekin lifetime me ye chije nhi hoti.
+
+
+5) payment ka flow kya hoga 
+
+    User clicks "Buy Pro Monthly"
+            ↓
+    Frontend shows payment UI (card/UPI form from gateway SDK)
+            ↓
+    User enters payment details
+            ↓
+    Gateway processes payment → returns success/failure
+            ↓
+    Backend receives confirmation (via webhook — see below)
+            ↓
+    Backend updates user's plan in database
+            ↓
+    User now sees Pro features unlocked
+
+    is bhag ko thora gaharai se samjhna hoga hme , 
+
+
+6) Webhooks 
+ 
+    ye software development ka hi ek concept he
+    ye process api ki tarah hi work karti he 
+    pr isme user ya developer ko kuch nhi karna hoga
+    jaise hi hm api trigger karnege or data strip ke pass jayega or
+    ek event call hoga ki hamara payment recieve hua ya nhi 
+    agar nhi hua to webhook ki help se signal milega 
+    failed/successed
+    payment twice ho gya to return karna within a certain time priod.
+
+
+    iski help se ye bhi pata lagega plan kab khatam hone vala he , kab renew karana hoga , card ya payment method to expire nhi ho gya.
+
+
+    hme apne system me api ke sath iske liye bhi endpoints create karne honge.
+
+
+
+7) Plan Change / Upgrade-Downgrade Logic 
+
+    Free → Pro: Simple, create new subscription
+
+    Monthly → Yearly: Cancel monthly, start yearly (prorate the unused days?)
+
+    Any → Lifetime: Cancel subscription, do one-time charge, mark lifetime
+
+    Pro → Free (cancel): Cancel subscription, set end_date, access till period ends
+
+
+8)  Access Control (Feature Gating)
+
+    hme check karte rahna hota he ki user ke pass pro plan he ya basic based on that hm access denge to iske liye
+    hme middleware create karna hoga , routes par
+
+
+9)  Invoice & Receipt System
+
+    hme user ke mail we invoice bhejenge with invoice id
+
+    jisme payment ka details hoga
+
+    konsa plan , end date , charges vagera hoga
+
+    
+

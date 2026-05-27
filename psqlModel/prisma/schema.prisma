@@ -3,6 +3,7 @@
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
+
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -14,16 +15,62 @@ datasource db {
 }
 
 
+// 1. casing naming conventions to match PostgreSQL standards
 enum Status {
-  active
-  canceled
-  expired
+  ACTIVE
+  CANCELED
+  EXPIRED
 }
 
-enum Plan_Cycle {
-  monthly
-  yearly
-  once
+enum PlanCycle {
+  MONTHLY
+  YEARLY
+  ONCE
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  username      String
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  subscriptions Subscription[]
+
+  @@map("users") // Keeps database table plural/lowercase safely
+}
+
+model ProductPlan {
+  planId        Int            @id @default(autoincrement()) @map("plan_id")
+  productName   String         @map("product_name")
+  
+  priceInCents  Int            @map("price_in_cents") 
+  
+  billingCycle  PlanCycle      @default(ONCE) @map("billing_cycle")
+  subscriptions Subscription[]
+
+  // OPTIONAL ADDITION: Connects directly to external gateways
+  stripePriceId String?        @map("stripe_price_id") 
+
+  @@map("product_plans") @map("plan_id")
+}
+
+model Subscription {
+  subscriptionId    Int         @id @default(autoincrement()) @map("subscription_id")
+  
+  planId            Int         @map("plan_id")
+  plan              ProductPlan @relation(fields: [planId], references: [planId])
+  
+  userId            Int         @map("user_id")
+  user              User        @relation(fields: [userId], references: [id])
+  
+  startDate         DateTime    @map("start_date")
+  endDate           DateTime    @map("end_date")
+  status            Status      @default(ACTIVE)
+  
+  // OPTIONAL ADDITION: Essential to track webhook events
+  stripeSubId       String?     @unique @map("stripe_subscription_id")
+
+  @@map("subscriptions")
 }
 
 model Post {
@@ -31,42 +78,6 @@ model Post {
   title     String
   content   String?
   createdAt DateTime @default(now())
+
+  @@map("posts")
 }
-
-model productplan {
-  plan_id Int  @id @default(autoincrement())
-  productName String
-  price String
-  billing_cycle Plan_Cycle @default(once)
-  subscriptions subscription[] 
-}
-
-
-model user {
-  id Int @id @default(autoincrement())
-  username String
-  email String @unique
-  password String 
-  createdAt DateTime @default(now())
-  subscriptions subscription[] 
-}
-
-model subscription {
-  subscription_id Int  @id @default(autoincrement())
-
-  planId Int  
-  plan productplan @relation(fields: [planId], references: [plan_id])
-  
-  userId Int 
-
-  user user @relation(fields: [userId],references: [id])
-
-  start_date DateTime
-  end_date DateTime
-  status Status @default(active)
-}
-
-
-
-
-

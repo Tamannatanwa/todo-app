@@ -1,20 +1,20 @@
-const router = require("express").Router();
+const express = require("express");
+const paymentController = require("../controllers/paymentController");
 
+const router = express.Router();
 
+router.post(
+  "/validatePayment",
+  paymentController.validatePayment
+);
 
-// 1. PUBLIC PRODUCT CATALOG ROUTES (Your existing routes)
-
-
-router.get("/plans",getAllProductPlan)
-router.get("/plan/:id",getProductPlan)
-
-
-// 2. USER SUBSCRIPTION MANAGEMENT ROUTES (The additions you need)
-
-router.get("/user/current-plan", requireAuth, getUserCurrentPlan);   // Check active access & permissions
-router.get("/user/billing-history", requireAuth, getUserBillingHistory); // View past invoices/receipts
-router.post("/user/subscribe", requireAuth, subscribeToPlan);        // Initiate a new purchase/checkout
-router.post("/user/change-plan", requireAuth, upgradeOrDowngradePlan); // Switch mid-cycle (pro-rata)
-router.post("/user/cancel-plan", requireAuth, cancelSubscription);   // Turn off auto-renew (keep access till end)
-
+router.post(
+  "/handleWebhook",
+  paymentController.handleWebhook
+);
 module.exports = router;
+
+
+
+
+// https://medium.com/@rhythm6194/implement-apple-ios-in-app-purchase-receipt-verification-in-node-js-app-server-notification-a10878bae69f
