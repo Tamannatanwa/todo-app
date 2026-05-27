@@ -46,6 +46,8 @@ ye provider hme ek api dega to create charges kitna lena he , subscriptions kya 
 and ye refunds , payment fail ho jaye ya retries ko bhi handle kar leta he khud se.
 
 
+Stripe ke saath test mode hota hai — real money nahi lagti development mein. 
+sk_test_ key use karte hain, sk_live_ sirf production mein.
 
 
 2) av hme plan's/product catalog 
@@ -62,14 +64,13 @@ yearly -> y charges for 1 yearly
 
 once (lifetime) -> z price for lifetime 
 
-isme hm 1 month ko 30 days 
-and 1 year ko 365 days bhi bol sakte he.
+stip khud se sab handle karega hme sirf webhook ko sunna he ...
 
-kyuki hm agar 1 month bolnege to hme code samjhne me thora dikkat hoga
+Stripe ko batao → billingCycle: MONTHLY
 
-agar days rakha to hm days count karke user ko re payment ke liye inform kar sakte he
+Stripe khud → 30 din baad auto charge karega
 
-ya auto kat skate he amount.
+Tumhara kaam → sirf webhook suno, DB update karo
 
 
 hr plan ki apni ek unique plan Id hogi taki hm identify kar sake 
@@ -80,7 +81,7 @@ user ne konsa plan choose kiya he
 
 3) model/db design for it
 
-iske liye hme 3 model ki zarurat hogi
+iske liye hme 4 model ki zarurat hogi
 
     1 - users ke data ko store karne ke liye user table 
 
@@ -88,29 +89,42 @@ iske liye hme 3 model ki zarurat hogi
         username    
         email         
         password    
+        stripeCustomerId
         createdAt     
         updateAt
+
   
 
     2 - hme products catalog ka details rakhna hoga 
-        isme hamare pass 
-        planId primary key , 
-        plan name unique,
-        plan charges float,
-        plan start date DATE, 
-        plan end date Date,
-        plan status enum use karnege (active | expired | cancelled | paused)
-        history ke liye timestamps rakhenge.
+        - planId (PK)
+        - planName
+        - priceInCents     ← float nahi, INT use karo (cents mein)
+        - billingCycle     ← MONTHLY | YEARLY | ONCE
+        - stripePriceId    ← stripe ka ID
+
 
     3 - is model me hm users + user ne kya plan liya uska details rakhenge
 
         userId - fk users table
         planId - fk producs table
         subscription_Id - pk
-        sub_provide_id - strip se lenge
         history ke liye timestamps rakhenge.
+        startDate
+        endDate          ← NULLABLE (lifetime ke liye null)
+        status           ← ACTIVE | EXPIRED | CANCELED
+        stripeSubId           ← monthly/yearly ke liye (Subscription ID)
+        stripePaymentIntentId ← lifetime ke liye (PaymentIntent ID)
 
-    
+    4- Payment history table
+
+        paymentId       - PK
+        subscriptionId  - FK
+        amountInCents   - INT
+        currency        - "inr" / "usd"
+        status          - "succeeded" | "failed" | "refunded"
+        stripeInvoiceId - Stripe se
+        paidAt          - DateTime (nullable)
+        createdAt       - timestamp
 
 4) Subscription vs One-Time Payment Logic
 
@@ -131,6 +145,9 @@ lekin lifetime vale ko nhi .
 
 hm monthly/yearly ko re new kara skate he bich me pyament rok skate he ya plan ko end kar skate he
 lekin lifetime me ye chije nhi hoti.
+
+Lifetime plan ke liye Stripe PaymentIntent deta hai, Subscription ID nahi. 
+Dono alag fields chahiye DB mein. 
 
 
 5) payment ka flow kya hoga 
@@ -169,6 +186,8 @@ lekin lifetime me ye chije nhi hoti.
 
     hme apne system me api ke sath iske liye bhi endpoints create karne honge.
 
+    Webhook endpoint pe Stripe Signature Verify karna zaroori hai — warna koi bhi fake webhook bhej ke tumhara plan activate kar sakta hai.
+
 
 
 7) Plan Change / Upgrade-Downgrade Logic 
@@ -187,6 +206,12 @@ lekin lifetime me ye chije nhi hoti.
     hme check karte rahna hota he ki user ke pass pro plan he ya basic based on that hm access denge to iske liye
     hme middleware create karna hoga , routes par
 
+    // Middleware mein yeh 3 cheezein check karni hogi
+
+    1. plan_status === "ACTIVE"
+    2. plan_type !== "free"
+    3. endDate === null   OR   endDate > today   // lifetime ke liye null
+
 
 9)  Invoice & Receipt System
 
@@ -196,5 +221,28 @@ lekin lifetime me ye chije nhi hoti.
 
     konsa plan , end date , charges vagera hoga
 
-    
+
+
+
+
+
+
+
+
+
+
+
+***************************
+
+
+NEXT PLAN - 
+
+Step 1 → Stripe account banao, test keys lo
+Step 2 → Prisma schema finalize karo (jo hum pehle review kar chuke hain)
+Step 3 → Stripe mein 3 plans create karo (monthly, yearly, lifetime)
+Step 4 → Payment flow + checkout API banao
+Step 5 → Webhook endpoint banao + signature verify
+Step 6 → Middleware (access control) banao
+Step 7 → Email invoice setup
+
 
