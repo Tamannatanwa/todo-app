@@ -14,8 +14,6 @@ datasource db {
   url = env("DATABASE_URL")  
 }
 
-
-// 1. casing naming conventions to match PostgreSQL standards
 enum Status {
   ACTIVE
   CANCELED
@@ -29,55 +27,55 @@ enum PlanCycle {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  username      String
-  email         String         @unique
-  password      String
-  createdAt     DateTime       @default(now())
-  subscriptions Subscription[]
+  id               Int            @id @default(autoincrement())
+  username         String
+  email            String         @unique
+  password         String
+  stripeCustomerId String?        @map("stripe_customer_id")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  subscriptions    Subscription[]
 
-  @@map("users") // Keeps database table plural/lowercase safely
+  @@map("users")
 }
 
 model ProductPlan {
   planId        Int            @id @default(autoincrement()) @map("plan_id")
-  productName   String         @map("product_name")
-  
-  priceInCents  Int            @map("price_in_cents") 
-  
+  planName      String         @map("plan_name")
+  priceInCents  Int            @map("price_in_cents")
   billingCycle  PlanCycle      @default(ONCE) @map("billing_cycle")
+  stripePriceId String?        @map("stripe_price_id")
   subscriptions Subscription[]
 
-  // OPTIONAL ADDITION: Connects directly to external gateways
-  stripePriceId String?        @map("stripe_price_id") 
-
-  @@map("product_plans") @map("plan_id")
+  @@map("product_plans")  
 }
 
 model Subscription {
-  subscriptionId    Int         @id @default(autoincrement()) @map("subscription_id")
-  
-  planId            Int         @map("plan_id")
-  plan              ProductPlan @relation(fields: [planId], references: [planId])
-  
-  userId            Int         @map("user_id")
-  user              User        @relation(fields: [userId], references: [id])
-  
-  startDate         DateTime    @map("start_date")
-  endDate           DateTime    @map("end_date")
-  status            Status      @default(ACTIVE)
-  
-  // OPTIONAL ADDITION: Essential to track webhook events
-  stripeSubId       String?     @unique @map("stripe_subscription_id")
+  subscriptionId        Int            @id @default(autoincrement()) @map("subscription_id")
+  userId                Int            @map("user_id")
+  user                  User           @relation(fields: [userId], references: [id])
+  planId                Int            @map("plan_id")
+  plan                  ProductPlan    @relation(fields: [planId], references: [planId])
+  startDate             DateTime       @map("start_date")
+  endDate               DateTime?      @map("end_date")      
+  status                Status         @default(ACTIVE)
+  stripeSubId           String?        @unique @map("stripe_subscription_id")
+  stripePaymentIntentId String?        @map("stripe_payment_intent_id")  
+  payments              PaymentHistory[]
 
   @@map("subscriptions")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  createdAt DateTime @default(now())
+model PaymentHistory {
+  paymentId       Int          @id @default(autoincrement()) @map("payment_id")
+  subscriptionId  Int          @map("subscription_id")
+  subscription    Subscription @relation(fields: [subscriptionId], references: [subscriptionId])
+  amountInCents   Int          @map("amount_in_cents")
+  currency        String       @default("inr")
+  status          String
+  stripeInvoiceId String?      @map("stripe_invoice_id")
+  paidAt          DateTime?    @map("paid_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
 
-  @@map("posts")
+  @@map("payment_history")
 }
