@@ -1,14 +1,80 @@
 const { prisma } = require("../config/psqlConn");
 
-const getAllProductPlans = async (req, res) => {
+const getAllProductPlans = async (req, res, next) => {
+  try {
+    const allPlans = await prisma.productPlan.findMany();
+    return res.status(200).json({
+      data: allPlans,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
 
-    try{
 
-        const allPlans = 
 
-    }
-    catch (err){
 
-    }
+const checkout = async (req, res, next) => {
+  try {
+    res.status(200).json({ msg: "checkout" });
+  } catch (err) {
+    next(err);
+  }
+};
 
-}
+
+
+
+const webhook = async (req, res, next) => {
+  try {
+    res.status(200).json({ msg: "webhook" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+
+const status = async (req, res, next) => {
+  try {
+    res.status(200).json({ msg: "status" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+
+const cancel = async (req, res, next) => {
+  try {
+    res.status(200).json({ msg: "cancel" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+
+const changePlan = async (req, res, next) => {
+  try {
+    res.status(200).json({ msg: "changePlan" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+
+module.exports = {
+  getAllProductPlans,
+  checkout,
+  webhook,
+  status,
+  cancel,
+  changePlan,
+};
