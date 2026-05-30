@@ -14,52 +14,67 @@ datasource db {
 }
 
 enum Status {
-  active
-  canceled
-  expired
+  ACTIVE
+  CANCELED
+  EXPIRED
 }
 
-enum Plan_Cycle {
-  monthly
-  yearly
-  once
+enum PlanCycle {
+  MONTHLY
+  YEARLY
+  ONCE
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  createdAt DateTime @default(now())
+model User {
+  id               Int            @id @default(autoincrement())
+  username         String
+  email            String         @unique
+  password         String
+  stripeCustomerId String?        @map("stripe_customer_id")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  subscriptions    Subscription[]
+
+  @@map("users")
 }
 
-model productplan {
-  plan_id       Int            @id @default(autoincrement())
-  productName   String
-  price         String
-  billing_cycle Plan_Cycle     @default(once)
-  subscriptions subscription[]
+model ProductPlan {
+  planId        Int            @id @default(autoincrement()) @map("plan_id")
+  planName      String         @map("plan_name")
+  priceInCents  Int            @map("price_in_cents")
+  billingCycle  PlanCycle      @default(ONCE) @map("billing_cycle")
+  stripePriceId String?        @map("stripe_price_id")
+  subscriptions Subscription[]
+
+  @@map("product_plans")
 }
 
-model user {
-  id            Int            @id @default(autoincrement())
-  username      String
-  email         String         @unique
-  password      String
-  createdAt     DateTime       @default(now())
-  subscriptions subscription[]
+model Subscription {
+  subscriptionId        Int              @id @default(autoincrement()) @map("subscription_id")
+  userId                Int              @map("user_id")
+  user                  User             @relation(fields: [userId], references: [id])
+  planId                Int              @map("plan_id")
+  plan                  ProductPlan      @relation(fields: [planId], references: [planId])
+  startDate             DateTime         @map("start_date")
+  endDate               DateTime?        @map("end_date")
+  status                Status           @default(ACTIVE)
+  stripeSubId           String?          @unique @map("stripe_subscription_id")
+  stripePaymentIntentId String?          @map("stripe_payment_intent_id")
+  payments              PaymentHistory[]
+
+  @@map("subscriptions")
 }
 
-model subscription {
-  subscription_id Int @id @default(autoincrement())
+model PaymentHistory {
+  paymentId       Int          @id @default(autoincrement()) @map("payment_id")
+  subscriptionId  Int          @map("subscription_id")
+  subscription    Subscription @relation(fields: [subscriptionId], references: [subscriptionId])
+  amountInCents   Int          @map("amount_in_cents")
+  currency        String       @default("inr")
+  status          String
+  stripeInvoiceId String?      @map("stripe_invoice_id")
+  paidAt          DateTime?    @map("paid_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
 
-  planId Int
-  plan   productplan @relation(fields: [planId], references: [plan_id])
-
-  userId Int
-
-  user user @relation(fields: [userId], references: [id])
-
-  start_date DateTime
-  end_date   DateTime
-  status     Status   @default(active)
+  @@map("payment_history")
 }

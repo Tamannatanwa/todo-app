@@ -121,35 +121,44 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.PostScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  content: 'content',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.ProductplanScalarFieldEnum = {
-  plan_id: 'plan_id',
-  productName: 'productName',
-  price: 'price',
-  billing_cycle: 'billing_cycle'
-};
-
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
   email: 'email',
   password: 'password',
-  createdAt: 'createdAt'
+  stripeCustomerId: 'stripeCustomerId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProductPlanScalarFieldEnum = {
+  planId: 'planId',
+  planName: 'planName',
+  priceInCents: 'priceInCents',
+  billingCycle: 'billingCycle',
+  stripePriceId: 'stripePriceId'
 };
 
 exports.Prisma.SubscriptionScalarFieldEnum = {
-  subscription_id: 'subscription_id',
-  planId: 'planId',
+  subscriptionId: 'subscriptionId',
   userId: 'userId',
-  start_date: 'start_date',
-  end_date: 'end_date',
-  status: 'status'
+  planId: 'planId',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  stripeSubId: 'stripeSubId',
+  stripePaymentIntentId: 'stripePaymentIntentId'
+};
+
+exports.Prisma.PaymentHistoryScalarFieldEnum = {
+  paymentId: 'paymentId',
+  subscriptionId: 'subscriptionId',
+  amountInCents: 'amountInCents',
+  currency: 'currency',
+  status: 'status',
+  stripeInvoiceId: 'stripeInvoiceId',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -166,23 +175,23 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.Plan_Cycle = exports.$Enums.Plan_Cycle = {
-  monthly: 'monthly',
-  yearly: 'yearly',
-  once: 'once'
+exports.PlanCycle = exports.$Enums.PlanCycle = {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY',
+  ONCE: 'ONCE'
 };
 
 exports.Status = exports.$Enums.Status = {
-  active: 'active',
-  canceled: 'canceled',
-  expired: 'expired'
+  ACTIVE: 'ACTIVE',
+  CANCELED: 'CANCELED',
+  EXPIRED: 'EXPIRED'
 };
 
 exports.Prisma.ModelName = {
-  Post: 'Post',
-  productplan: 'productplan',
-  user: 'user',
-  subscription: 'subscription'
+  User: 'User',
+  ProductPlan: 'ProductPlan',
+  Subscription: 'Subscription',
+  PaymentHistory: 'PaymentHistory'
 };
 
 /**

@@ -2,7 +2,8 @@ const user = require("../model/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { prisma } = require("../config/psqlConn");
-
+const Stripe = require("stripe");
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const genrateToken = async (userData) => {
   const payload = { userId: userData.id, email: userData.email };
@@ -32,12 +33,22 @@ const signup = async (req, res, next) => {
     }
     const hashPsw = await bcrypt.hash(password, 10);
 
+    const customer = await stripe.customers.create({
+      email,
+      name: username,
+    });
+
     const newUser = await prisma.user.create({
       data: {
         username,
         email,
         password: hashPsw,
+        stripeCustomerId: customer.id,
       },
+    });
+
+    await stripe.customers.update(customer.id, {
+      metadata: { userId: String(newUser.id) },
     });
 
     console.log("user added successfully", newUser);
@@ -46,7 +57,7 @@ const signup = async (req, res, next) => {
       msg: "user signup successfully !",
       username: newUser.username,
       email: newUser.email,
-      userId:newUser.id,
+      userId: newUser.id,
       auth_token: await genrateToken(newUser),
     });
   } catch (err) {
@@ -65,9 +76,12 @@ const login = async (req, res, next) => {
         msg: "all fields are required !",
       });
     }
-    const userFind =  await prisma.user.findUnique({
+    const userFind = await prisma.user.findUnique({
       where: { email: email },
     });
+    if (!userFind) {
+      return res.status(400).json({ msg: "user not found" });
+    }
     const psw_varify = await bcrypt.compare(password, userFind.password);
     if (!psw_varify) {
       console.log("wrong password");
@@ -75,7 +89,7 @@ const login = async (req, res, next) => {
         msg: "wrong password",
       });
     }
-    
+
     console.log("User Found", userFind);
 
     return res.status(200).json({

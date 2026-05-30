@@ -23,6 +23,7 @@
     "node-apple-receipt-verify": "^1.15.0",
     "nodemon": "^3.1.14",
     "pg": "^8.20.0",
-    "prisma": "^6.19.3"
+    "prisma": "^6.19.3",
+    "stripe": "^22.2.0"
   }
 }

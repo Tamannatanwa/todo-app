@@ -246,3 +246,75 @@ Step 6 → Middleware (access control) banao
 Step 7 → Email invoice setup
 
 
+
+
+USER JOURNEY 
+
+User signup karta hai tumhari app pe
+        ↓
+Tumhara backend Stripe ko call karta hai
+"ek naya customer banao is email ke liye"
+        ↓
+Stripe respond karta hai →  cus_xxxxxxxx
+        ↓
+Ye ID tumhari DB mein User table mein save ho jaati hai
+
+
+
+**********************
+
+
+
+
+
+
+
+## Poora Roadmap
+
+**1. Seed**
+- 3 plans DB mein daalo (Monthly, Yearly, Lifetime) with Stripe Price IDs
+
+**2. Routes**
+- `POST /auth/register` — user banta hai + Stripe customer ID save
+- `POST /payments/checkout` — plan select, Stripe session banao
+- `POST /payments/webhook` — Stripe events suno
+- `GET /payments/status` — user ka current plan check
+- `POST /payments/cancel` — subscription cancel
+- `POST /payments/change-plan` — upgrade/downgrade
+
+**3. Controllers**
+- `auth.controller` — register/login
+- `payment.controller` — checkout, cancel, change-plan
+- `webhook.controller` — Stripe events handle
+
+**4. Services**
+- `stripe.service` — Stripe se directly baat karna (customer banao, session banao)
+- `subscription.service` — DB mein plan update, status check
+- `invoice.service` — email bhejo receipt ke saath
+
+**5. Middleware**
+- `isPro` — route pe lagao, check karo plan ACTIVE hai ya nahi
+- `verifyStripeSignature` — webhook pe lagao, fake requests block karo
+
+**6. Webhook Events Handle Karo**
+- `payment_intent.succeeded` → lifetime plan activate
+- `invoice.payment_succeeded` → monthly/yearly renew
+- `customer.subscription.deleted` → cancel/expire
+- `invoice.payment_failed` → status failed karo
+
+**7. Invoice**
+- Payment succeed hone pe email bhejo
+- Stripe khud invoice generate karta hai — tum sirf email service se bhejo
+
+---
+
+```
+Seed → Routes → Controller → Service → Webhook → Middleware → Invoice
+```
+
+
+Artical --
+
+https://dev.to/ivanivanovv/stripe-subscription-integration-in-nodejs-2024-ultimate-guide-2ba3
+
+https://coreui.io/answers/how-to-integrate-stripe-in-nodejs/

@@ -93,35 +93,44 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.PostScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  content: 'content',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.ProductplanScalarFieldEnum = {
-  plan_id: 'plan_id',
-  productName: 'productName',
-  price: 'price',
-  billing_cycle: 'billing_cycle'
-};
-
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
   email: 'email',
   password: 'password',
-  createdAt: 'createdAt'
+  stripeCustomerId: 'stripeCustomerId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProductPlanScalarFieldEnum = {
+  planId: 'planId',
+  planName: 'planName',
+  priceInCents: 'priceInCents',
+  billingCycle: 'billingCycle',
+  stripePriceId: 'stripePriceId'
 };
 
 exports.Prisma.SubscriptionScalarFieldEnum = {
-  subscription_id: 'subscription_id',
-  planId: 'planId',
+  subscriptionId: 'subscriptionId',
   userId: 'userId',
-  start_date: 'start_date',
-  end_date: 'end_date',
-  status: 'status'
+  planId: 'planId',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  stripeSubId: 'stripeSubId',
+  stripePaymentIntentId: 'stripePaymentIntentId'
+};
+
+exports.Prisma.PaymentHistoryScalarFieldEnum = {
+  paymentId: 'paymentId',
+  subscriptionId: 'subscriptionId',
+  amountInCents: 'amountInCents',
+  currency: 'currency',
+  status: 'status',
+  stripeInvoiceId: 'stripeInvoiceId',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -139,22 +148,22 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 exports.Status = exports.$Enums.Status = {
-  active: 'active',
-  canceled: 'canceled',
-  expired: 'expired'
+  ACTIVE: 'ACTIVE',
+  CANCELED: 'CANCELED',
+  EXPIRED: 'EXPIRED'
 };
 
-exports.Plan_Cycle = exports.$Enums.Plan_Cycle = {
-  monthly: 'monthly',
-  yearly: 'yearly',
-  once: 'once'
+exports.PlanCycle = exports.$Enums.PlanCycle = {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY',
+  ONCE: 'ONCE'
 };
 
 exports.Prisma.ModelName = {
-  Post: 'Post',
-  productplan: 'productplan',
-  user: 'user',
-  subscription: 'subscription'
+  User: 'User',
+  ProductPlan: 'ProductPlan',
+  Subscription: 'Subscription',
+  PaymentHistory: 'PaymentHistory'
 };
 /**
  * Create the Client
@@ -194,6 +203,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -202,13 +212,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Get a free hosted Postgres database in seconds: `npx create-db`\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Status {\n  active\n  canceled\n  expired\n}\n\nenum Plan_Cycle {\n  monthly\n  yearly\n  once\n}\n\nmodel Post {\n  id        Int      @id @default(autoincrement())\n  title     String\n  content   String?\n  createdAt DateTime @default(now())\n}\n\nmodel productplan {\n  plan_id       Int            @id @default(autoincrement())\n  productName   String\n  price         String\n  billing_cycle Plan_Cycle     @default(once)\n  subscriptions subscription[]\n}\n\nmodel user {\n  id            Int            @id @default(autoincrement())\n  username      String\n  email         String         @unique\n  password      String\n  createdAt     DateTime       @default(now())\n  subscriptions subscription[]\n}\n\nmodel subscription {\n  subscription_id Int @id @default(autoincrement())\n\n  planId Int\n  plan   productplan @relation(fields: [planId], references: [plan_id])\n\n  userId Int\n\n  user user @relation(fields: [userId], references: [id])\n\n  start_date DateTime\n  end_date   DateTime\n  status     Status   @default(active)\n}\n",
-  "inlineSchemaHash": "931999e38928222d1f3e83b67c5cae4b77ad4ffa65fe6b54c227cd055f9cb40e",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Get a free hosted Postgres database in seconds: `npx create-db`\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Status {\n  ACTIVE\n  CANCELED\n  EXPIRED\n}\n\nenum PlanCycle {\n  MONTHLY\n  YEARLY\n  ONCE\n}\n\nmodel User {\n  id               Int            @id @default(autoincrement())\n  username         String\n  email            String         @unique\n  password         String\n  stripeCustomerId String?        @map(\"stripe_customer_id\")\n  createdAt        DateTime       @default(now()) @map(\"created_at\")\n  updatedAt        DateTime       @updatedAt @map(\"updated_at\")\n  subscriptions    Subscription[]\n\n  @@map(\"users\")\n}\n\nmodel ProductPlan {\n  planId        Int            @id @default(autoincrement()) @map(\"plan_id\")\n  planName      String         @map(\"plan_name\")\n  priceInCents  Int            @map(\"price_in_cents\")\n  billingCycle  PlanCycle      @default(ONCE) @map(\"billing_cycle\")\n  stripePriceId String?        @map(\"stripe_price_id\")\n  subscriptions Subscription[]\n\n  @@map(\"product_plans\")\n}\n\nmodel Subscription {\n  subscriptionId        Int              @id @default(autoincrement()) @map(\"subscription_id\")\n  userId                Int              @map(\"user_id\")\n  user                  User             @relation(fields: [userId], references: [id])\n  planId                Int              @map(\"plan_id\")\n  plan                  ProductPlan      @relation(fields: [planId], references: [planId])\n  startDate             DateTime         @map(\"start_date\")\n  endDate               DateTime?        @map(\"end_date\")\n  status                Status           @default(ACTIVE)\n  stripeSubId           String?          @unique @map(\"stripe_subscription_id\")\n  stripePaymentIntentId String?          @map(\"stripe_payment_intent_id\")\n  payments              PaymentHistory[]\n\n  @@map(\"subscriptions\")\n}\n\nmodel PaymentHistory {\n  paymentId       Int          @id @default(autoincrement()) @map(\"payment_id\")\n  subscriptionId  Int          @map(\"subscription_id\")\n  subscription    Subscription @relation(fields: [subscriptionId], references: [subscriptionId])\n  amountInCents   Int          @map(\"amount_in_cents\")\n  currency        String       @default(\"inr\")\n  status          String\n  stripeInvoiceId String?      @map(\"stripe_invoice_id\")\n  paidAt          DateTime?    @map(\"paid_at\")\n  createdAt       DateTime     @default(now()) @map(\"created_at\")\n\n  @@map(\"payment_history\")\n}\n",
+  "inlineSchemaHash": "11ada07201f6261af923c488d8f78f648b35f6e6aec2740e9a16e018b146ab89",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"productplan\":{\"fields\":[{\"name\":\"plan_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"billing_cycle\",\"kind\":\"enum\",\"type\":\"Plan_Cycle\"},{\"name\":\"subscriptions\",\"kind\":\"object\",\"type\":\"subscription\",\"relationName\":\"productplanTosubscription\"}],\"dbName\":null},\"user\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"subscriptions\",\"kind\":\"object\",\"type\":\"subscription\",\"relationName\":\"subscriptionTouser\"}],\"dbName\":null},\"subscription\":{\"fields\":[{\"name\":\"subscription_id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"planId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"plan\",\"kind\":\"object\",\"type\":\"productplan\",\"relationName\":\"productplanTosubscription\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"user\",\"relationName\":\"subscriptionTouser\"},{\"name\":\"start_date\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"end_date\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"Status\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stripeCustomerId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_customer_id\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"subscriptions\",\"kind\":\"object\",\"type\":\"Subscription\",\"relationName\":\"SubscriptionToUser\"}],\"dbName\":\"users\"},\"ProductPlan\":{\"fields\":[{\"name\":\"planId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"plan_id\"},{\"name\":\"planName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"plan_name\"},{\"name\":\"priceInCents\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"price_in_cents\"},{\"name\":\"billingCycle\",\"kind\":\"enum\",\"type\":\"PlanCycle\",\"dbName\":\"billing_cycle\"},{\"name\":\"stripePriceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_price_id\"},{\"name\":\"subscriptions\",\"kind\":\"object\",\"type\":\"Subscription\",\"relationName\":\"ProductPlanToSubscription\"}],\"dbName\":\"product_plans\"},\"Subscription\":{\"fields\":[{\"name\":\"subscriptionId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"subscription_id\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"user_id\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SubscriptionToUser\"},{\"name\":\"planId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"plan_id\"},{\"name\":\"plan\",\"kind\":\"object\",\"type\":\"ProductPlan\",\"relationName\":\"ProductPlanToSubscription\"},{\"name\":\"startDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"start_date\"},{\"name\":\"endDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"end_date\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"Status\"},{\"name\":\"stripeSubId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_subscription_id\"},{\"name\":\"stripePaymentIntentId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_payment_intent_id\"},{\"name\":\"payments\",\"kind\":\"object\",\"type\":\"PaymentHistory\",\"relationName\":\"PaymentHistoryToSubscription\"}],\"dbName\":\"subscriptions\"},\"PaymentHistory\":{\"fields\":[{\"name\":\"paymentId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"payment_id\"},{\"name\":\"subscriptionId\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"subscription_id\"},{\"name\":\"subscription\",\"kind\":\"object\",\"type\":\"Subscription\",\"relationName\":\"PaymentHistoryToSubscription\"},{\"name\":\"amountInCents\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"amount_in_cents\"},{\"name\":\"currency\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stripeInvoiceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_invoice_id\"},{\"name\":\"paidAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"paid_at\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":\"payment_history\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
