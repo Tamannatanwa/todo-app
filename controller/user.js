@@ -50,7 +50,7 @@ const signup = async (req, res, next) => {
       metadata: { userId: String(newUser.id) },
     });
 
-    console.log("user added successfully", newUser);
+    console.log("user added successfully");
 
     return res.status(201).json({
       msg: "user signup successfully !",
@@ -89,7 +89,7 @@ const login = async (req, res, next) => {
       });
     }
 
-    console.log("User Found", userFind);
+    console.log("User Found");
 
     return res.status(200).json({
       msg: "User login successfully !",
