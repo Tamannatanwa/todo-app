@@ -1,4 +1,5 @@
 const { prisma } = require("../config/psqlConn");
+const stripe = require("../stripe/stripe.client")
 
 const getAllProductPlans = async (req, res, next) => {
   try {
@@ -12,12 +13,12 @@ const getAllProductPlans = async (req, res, next) => {
   }
 };
 
-
-
 const checkout = async (req, res, next) => {
   try {
     const { planId } = req.body;
     const { userId } = req.user;
+
+    // Step 1 - Plan dhundo
     const plan = await prisma.productPlan.findUnique({
       where: { planId: planId },
     });
@@ -26,21 +27,50 @@ const checkout = async (req, res, next) => {
       return res.status(404).json({ msg: "Plan not found" });
     }
 
+    // Step 2 - Active subscription check karo
     const existingPlan = await prisma.subscription.findFirst({
-      where: {
-        userId: userId,
-        status: "ACTIVE",
-      },
+      where: { userId: userId, status: "ACTIVE" },
     });
     if (existingPlan) {
-      return res.status(400).json({ msg: "already active plan hai" });
+      return res.status(400).json({ msg: "Already active plan hai" });
     }
 
-    res.status(200).json({ msg: "checkout" });
+    // Step 3 - User ka stripeCustomerId nikalo
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    // Step 4 - Stripe checkout session banao
+    const isSubscription = plan.billingCycle === "MONTHLY" || plan.billingCycle === "YEARLY";
+
+    const session = await stripe.checkout.sessions.create({
+      customer: user.stripeCustomerId,
+      mode: isSubscription ? "subscription" : "payment",
+      line_items: [
+        {
+          price: plan.stripePriceId,
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        userId: String(userId),
+        planId: String(planId),
+      },
+      success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL}/cancel`,
+    });
+
+    // Step 5 - URL bhejo frontend ko
+    return res.status(200).json({
+      checkoutUrl: session.url,
+    });
+
   } catch (err) {
     next(err);
   }
 };
+
+
 
 
 
@@ -52,6 +82,8 @@ const webhook = async (req, res, next) => {
   }
 };
 
+
+
 const status = async (req, res, next) => {
   try {
     res.status(200).json({ msg: "status" });
@@ -60,6 +92,8 @@ const status = async (req, res, next) => {
   }
 };
 
+
+
 const cancel = async (req, res, next) => {
   try {
     res.status(200).json({ msg: "cancel" });
@@ -67,6 +101,8 @@ const cancel = async (req, res, next) => {
     next(err);
   }
 };
+
+
 
 const changePlan = async (req, res, next) => {
   try {
@@ -84,3 +120,4 @@ module.exports = {
   cancel,
   changePlan,
 };
+
