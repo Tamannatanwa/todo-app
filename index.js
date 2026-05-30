@@ -10,6 +10,7 @@ const {pgConn} = require("./config/psqlConn")
 // Routes - v1.0.0.1
 const todoRoute  = require("./route/todo.route")
 const userRoute = require("./route/user.route")
+const appPurchaseRoute = require("./route/appPurchase.route")
 
 //Error Handling
 const {errorHandler ,  globalErrorHandler} = require("./middlewares/ErrorHandlingMiddleware")
@@ -22,6 +23,7 @@ app.use(cors())
 app.use(express.json())
 app.use("/todo",todoRoute)
 app.use("/user",userRoute)
+app.use("/payment",appPurchaseRoute)
 app.use(errorHandler);
 
 

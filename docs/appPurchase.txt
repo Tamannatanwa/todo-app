@@ -318,3 +318,22 @@ Artical --
 https://dev.to/ivanivanovv/stripe-subscription-integration-in-nodejs-2024-ultimate-guide-2ba3
 
 https://coreui.io/answers/how-to-integrate-stripe-in-nodejs/
+
+
+
+
+****************
+
+Payment flow
+
+User "Buy Pro Monthly" click kare
+        ↓
+Tumhara backend Stripe ko call kare
+        ↓
+Stripe ek checkout URL dega
+        ↓
+User wahan pay kare
+        ↓
+Webhook se confirm aaye
+        ↓
+DB update ho
