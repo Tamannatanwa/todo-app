@@ -44,7 +44,7 @@ model ProductPlan {
   planName      String         @map("plan_name")
   priceInCents  Int            @map("price_in_cents")
   billingCycle  PlanCycle      @default(ONCE) @map("billing_cycle")
-  stripePriceId String?        @map("stripe_price_id")
+  stripePriceId String? @unique @map("stripe_price_id")
   subscriptions Subscription[]
 
   @@map("product_plans")  

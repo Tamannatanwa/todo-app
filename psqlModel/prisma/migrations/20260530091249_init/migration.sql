@@ -1,46 +1,8 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('ACTIVE', 'CANCELED', 'EXPIRED');
 
-  - The values [active,canceled,expired] on the enum `Status` will be removed. If these variants are still used in the database, this will fail.
-  - You are about to drop the `Post` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `productplan` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `subscription` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `user` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "PlanCycle" AS ENUM ('MONTHLY', 'YEARLY', 'ONCE');
-
--- AlterEnum
-BEGIN;
-CREATE TYPE "Status_new" AS ENUM ('ACTIVE', 'CANCELED', 'EXPIRED');
-ALTER TABLE "public"."subscription" ALTER COLUMN "status" DROP DEFAULT;
-ALTER TABLE "subscriptions" ALTER COLUMN "status" TYPE "Status_new" USING ("status"::text::"Status_new");
-ALTER TYPE "Status" RENAME TO "Status_old";
-ALTER TYPE "Status_new" RENAME TO "Status";
-DROP TYPE "public"."Status_old";
-COMMIT;
-
--- DropForeignKey
-ALTER TABLE "subscription" DROP CONSTRAINT "subscription_planId_fkey";
-
--- DropForeignKey
-ALTER TABLE "subscription" DROP CONSTRAINT "subscription_userId_fkey";
-
--- DropTable
-DROP TABLE "Post";
-
--- DropTable
-DROP TABLE "productplan";
-
--- DropTable
-DROP TABLE "subscription";
-
--- DropTable
-DROP TABLE "user";
-
--- DropEnum
-DROP TYPE "Plan_Cycle";
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -96,6 +58,9 @@ CREATE TABLE "payment_history" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "product_plans_stripe_price_id_key" ON "product_plans"("stripe_price_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "subscriptions_stripe_subscription_id_key" ON "subscriptions"("stripe_subscription_id");

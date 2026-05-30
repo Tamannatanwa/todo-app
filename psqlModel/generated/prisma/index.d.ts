@@ -6083,15 +6083,15 @@ export namespace Prisma {
 
   export type ProductPlanWhereUniqueInput = Prisma.AtLeast<{
     planId?: number
+    stripePriceId?: string
     AND?: ProductPlanWhereInput | ProductPlanWhereInput[]
     OR?: ProductPlanWhereInput[]
     NOT?: ProductPlanWhereInput | ProductPlanWhereInput[]
     planName?: StringFilter<"ProductPlan"> | string
     priceInCents?: IntFilter<"ProductPlan"> | number
     billingCycle?: EnumPlanCycleFilter<"ProductPlan"> | $Enums.PlanCycle
-    stripePriceId?: StringNullableFilter<"ProductPlan"> | string | null
     subscriptions?: SubscriptionListRelationFilter
-  }, "planId">
+  }, "planId" | "stripePriceId">
 
   export type ProductPlanOrderByWithAggregationInput = {
     planId?: SortOrder

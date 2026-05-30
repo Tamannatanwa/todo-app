@@ -2,8 +2,7 @@ const user = require("../model/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { prisma } = require("../config/psqlConn");
-const Stripe = require("stripe");
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = require("../stripe/stripe.client")
 
 const genrateToken = async (userData) => {
   const payload = { userId: userData.id, email: userData.email };
