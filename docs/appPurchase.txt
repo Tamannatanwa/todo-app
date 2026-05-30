@@ -337,3 +337,25 @@ User wahan pay kare
 Webhook se confirm aaye
         ↓
 DB update ho
+
+
+
+
+
+
+Checkout API — Kya HogaCheckout API
+
+1. planId se DB mein plan dhundo → stripePriceId nikalo
+
+2. Check karo user ka already koi active plan toh nahi
+
+3. Stripe ko bolo checkout session banao
+   - Monthly/Yearly → mode: "subscription"
+   - Lifetime       → mode: "payment"
+
+4. Stripe ek URL dega → frontend ko bhejo
+
+5. User us URL pe jaake pay karega
+
+6. Payment hone ke baad Stripe webhook call karega
+   (DB update webhook mein hoga, checkout mein nahi)

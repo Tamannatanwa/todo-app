@@ -1,6 +1,7 @@
 const express = require("express");
 const paymentController = require("../controller/appPurchase");
 
+const { authMiddlewareJwt } = require("../middlewares/auth.middleware");
 const router = express.Router();
 
 // Plans
@@ -14,7 +15,11 @@ router.get("/plans", paymentController.getAllProductPlans);
 //auth - middleware  is required for this
 
 // User ne plan choose kiya — Stripe ko bolo "is user ke liye checkout page banao" — Stripe ek URL dega — user wahan jaake pay karega.
-router.post("/checkout", paymentController.checkout);
+router.post("/checkout",authMiddlewareJwt, paymentController.checkout);
+
+
+
+
 
 
 // Stripe khud call karta hai jab kuch hota hai — payment hua, subscription cancel hua, payment fail hua — hum DB update karte hain.
@@ -22,15 +27,15 @@ router.post("/webhook", paymentController.webhook);
 
 
 // User ka current plan check karo — ACTIVE hai ya EXPIRED — frontend ko batao kaun si features dikhani hain.
-router.get("/status", paymentController.status);
+router.get("/status",authMiddlewareJwt, paymentController.status);
 
 // User ne subscription band karni hai — Stripe ko bolo cancel karo — DB mein status CANCELED karo — end date tak access milta rahega.
-router.post("/cancel", paymentController.cancel);
+router.post("/cancel",authMiddlewareJwt, paymentController.cancel);
 
 
 
 // User Monthly se Yearly pe jaana chahta hai — purana plan cancel karo — naya plan shuru karo.
-router.post("/change-plan", paymentController.changePlan);  
+router.post("/change-plan",authMiddlewareJwt, paymentController.changePlan);  
 
 
 
