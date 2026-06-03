@@ -79,3 +79,6 @@ model PaymentHistory {
 
   @@map("payment_history")
 }
+
+
+
