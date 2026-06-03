@@ -2,6 +2,7 @@ const express = require("express");
 const paymentController = require("../controller/appPurchase");
 
 const { authMiddlewareJwt } = require("../middlewares/auth.middleware");
+const {webhook} = require("../webhooks/webhook.controller")
 const router = express.Router();
 
 // Plans
@@ -23,7 +24,7 @@ router.post("/checkout",authMiddlewareJwt, paymentController.checkout);
 
 
 // Stripe khud call karta hai jab kuch hota hai — payment hua, subscription cancel hua, payment fail hua — hum DB update karte hain.
-router.post("/webhook", paymentController.webhook);
+router.post("/webhook", webhook);
 
 
 // User ka current plan check karo — ACTIVE hai ya EXPIRED — frontend ko batao kaun si features dikhani hain.

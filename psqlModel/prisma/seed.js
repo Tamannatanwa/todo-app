@@ -6,7 +6,7 @@ const seeds = async () => {
     const plans = [
       {
         planName: "Pro Monthly",
-        priceInCents: 99900, // ₹999
+        priceInCents: 5100, // ₹51
         billingCycle: "MONTHLY",
         stripePriceId: process.env.STRIPE_PRICE_MONTHLY,
       },

@@ -359,3 +359,44 @@ Checkout API — Kya HogaCheckout API
 
 6. Payment hone ke baad Stripe webhook call karega
    (DB update webhook mein hoga, checkout mein nahi)
+
+
+
+
+
+
+
+
+
+
+
+
+
+*******************************************
+
+
+Webhook Controller Mein Logic
+
+Event aayega → checkout.session.completed
+      ↓
+userId aur planId nikalo metadata se
+      ↓
+Plan ki details nikalo DB se (billingCycle check)
+      ↓
+Subscription table mein record banao
+      ↓
+PaymentHistory mein record banao
+
+
+
+********************
+
+https://docs.stripe.com/payments/checkout/build-subscriptions
+
+https://dev.to/whoffagents/stripe-webhooks-handle-payment-events-without-losing-data-13kl
+
+
+https://www.magicbell.com/blog/stripe-webhooks-guide
+
+https://medium.com/@harshilsharmaa51/integrate-stripe-payment-with-nodejs-and-save-it-in-database-42a6b53c479b
+

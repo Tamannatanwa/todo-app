@@ -19,12 +19,14 @@ const app = express()
 
 
 // Common Middleware
+app.use("/payment/webhook", express.raw({ type: "application/json" }));
 app.use(cors())
 app.use(express.json())
 app.use("/todo",todoRoute)
 app.use("/user",userRoute)
 app.use("/payment",appPurchaseRoute)
 app.use(errorHandler);
+
 
 
 const PORT = process.env.PORT
